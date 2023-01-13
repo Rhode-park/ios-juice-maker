@@ -15,9 +15,8 @@
 <br/>
 
 ## 1. 소개
-가지고 있는 과일들을 사용하여 과일 쥬스를 만드는 어플리케이션입니다. 만들 수 있는 쥬스는 딸기쥬스, 바나나쥬스, 키위쥬스, 파인애플 쥬스, 망고 쥬스, 망고 키위 쥬스입니다. 딸기쥬스는 딸기 16개, 바나나쥬스는 바나나 2개, 키위쥬스는 키위 3개, 파인애플 쥬스는 파인애플 2개, 딸바쥬스는 딸기 10개와 바나나 1개, 망고쥬스는 망고 3개, 망고키위 쥬스는 망고 2개와 키위 1개를 소모합니다. 가지고 있는 과일은 딸기, 바나나, 키위, 파인애플, 망고이며 각 과일들의 재고는 10개입니다. 
+가지고 있는 과일들을 사용하여 과일 쥬스를 만드는 어플리케이션입니다. 딸기, 바나나, 키위, 파인애플, 망고를 사용하여 딸기쥬스, 바나나쥬스, 키위쥬스, 파인애플 쥬스, 망고 쥬스, 망고 키위 쥬스를 제작할 수 있습니다.
 
-<추후 나머지 step에서 수정할 예정>
 
 <br/>
 
@@ -42,29 +41,35 @@
 |23.01.03 (화)|FruitStore, JuiceMaker, ErrorMessage 작성|
 |23.01.04 (수)|1차 리팩토링, STEP1 1차 PR|
 |23.01.05 (목)|2차 리팩토링, STEP1 2차 PR|
-|23.01.06 (금)|3차 리팩토링, 공식 문서 학습|
-|23.01.09 (월)|진행 예정|
-|23.01.10 (화)|진행 예정|
-|23.01.11 (수)|진행 예정|
-|23.01.12 (목)|진행 예정|
-|23.01.13 (금)|진행 예정|
+|23.01.06 (금)|3차 리팩토링, 공식 문서 학습, STEP1 머지|
+|23.01.09 (월)|공식 문서 학습, STEP2 1차 PR|
+|23.01.10 (화)|1차 리팩토링|
+|23.01.11 (수)|STEP2 머지, 공식 문서 학습|
+|23.01.12 (목)|StockModifyViewController 작성, 오토레이아웃 적용|
+|23.01.13 (금)|STEP3 1차 PR|
+|23.01.16 (월)|-|
+|23.01.17 (화)|-|
+|23.01.18 (수)|-|
+|23.01.19 (목)|-|
+|23.01.20 (금)|-|
 
 <br/>
 
 ## 4. 프로젝트 구조
 ### 순서도
-추후 나머지 step에서 추가할 예정
+추후 마지막 머지 이후 추가할 예정
 
 <br/>
 
 ## 5. 실행 화면(기능 설명)
-추후 나머지 step에서 추가할 예정
+추후 마지막 머지 이후 추가할 예정
 
 
 </br>
 
 ## 6. 트러블 슈팅
 ### 1. 동일한 코드가 반복되는 문제
+`let recipe` 부터 throw `JuiceMakerError.invalidFruit`까지가 `isStocked`에서도 반복되는 문제가 있었습니다.
 ```swift
     func useFruit(juice: Recipe) throws {
         let recipe = Recipe.selectRecipe(recipe: juice)
@@ -72,26 +77,12 @@
             guard let stock = fruitStock[key] else {
                 throw JuiceMakerError.invalidFruit
             }
-            let amount = value
-            let newStock = stock - amount
-            fruitStock[key] = newStock
+        ...
         }
     }
     
     func isStocked(juice: Recipe) -> Bool {
-        var isAvailable = true
-        let recipe = Recipe.selectRecipe(recipe: juice)
-        for (key, value) in recipe {
-            guard let stock = fruitStock[key] else {
-                return false
-            }
-            let amount = value
-            let newStock = stock - amount
-            if newStock < 0 {
-                isAvailable = false
-            }
-        }
-        return isAvailable
+    ...
     }
 ```
 해당 코드의 for문 부분을 isStocked로 남기고, isStocked에서 success와 failure로 구분해 재고를 반환하는 방법을 선택했습니다.
@@ -148,21 +139,11 @@ static func selectRecipe(recipe: Recipe) -> [FruitType:Int] {
 
 ### 3. 튜플 사용시 라벨이 사용 되지 않는 문제
 ```swift
-func useFruit(juice: Juice) -> [Fruit: Int]? {
-        let fruitRemainder = isStocked(juice: juice)
-        switch fruitRemainder {
-        case .success(let remainder):
-            for fruit in remainder {
-                fruitStock[fruit.0] = fruit.1
-            }
-            return fruitStock
-        case .failure(let error):
-            print(error.rawValue)
-            return nil
-        }
-    }
+for fruit in remainder {
+    fruitStock[fruit.0] = fruit.1
+}
 ```
-쥬스를 제작하고 남은 재고를 `fruitstock[fruit.0] = fruit.1`에서 `fruit.0`대신 `fruit.name`등으로 받아오고 싶었습니다.
+쥬스를 제작하고 남은 재고를 `fruitstock[fruit.0] = fruit.1`에서 `fruit.0`과 `fruit.1`대신 `fruit.name`등으로 받아오고 싶었습니다.
 
 ```swift
 func isStocked(juice: Juice) -> Result<[(Fruit, Int)], JuiceMakerError> {
@@ -184,29 +165,73 @@ func isStocked(juice: Juice) -> Result<[(Fruit, Int)], JuiceMakerError> {
 그래서 위와 같이 코드를 고쳤는데 전혀 반영이 되지 않았습니다. 그러다가 중요한 것은 반환타입이라는 것을 깨달았습니다.
 ```swift
 func isStocked(juice: Juice) -> Result<[(fruit: Fruit, stock: Int)], JuiceMakerError> {
-        let juice = juice.selectRecipe
-        var fruitList: [(Fruit, Int)] = []
-        for (fruit, amount) in juice {
-            guard let stock = fruitStock[fruit] else {
-                return .failure(JuiceMakerError.invalidFruit)
-            }
-            let newStock = stock - amount
-            fruitList.append((fruit, newStock))
-            if newStock < 0 {
-                return .failure(JuiceMakerError.outOfStock)
-            }
-        }
-        return .success(fruitList)
+        ...
     }
 ```
 이렇게 Result안의 배열 안의 튜플에 라벨을 달아줘야합니다.
 
 ```swift
 for fruit in remainder {
-                fruitStock[fruit.fruit] = fruit.stock
-            }
+    fruitStock[fruit.fruit] = fruit.stock
+}
 ```
 그 결과 이렇게 fruit과 stock이라는 라벨을 사용해서 값에 접근할 수 있게 되었습니다.
+
+<br/>
+
+### 4. 네비게이션은 넘어가지만, 두 번째 뷰의 요소들을 사용할 수 없는 상황
+쥬스를 만드는 화면은 ViewController에 그리고 재고 관리 화면은 StockModifyViewController에 연결이 되어있습니다. 초기에는 네비게이션 바의 backButton 문구를 수정하고자 StockModifyViewController 파일에 변경하고자 하는 내용을 작성했습니다. 하지만 backButton title의 경우 ViewController 화면에서 수정 코드를 작성해야 함을 알았습니다.
+이후 StockModifyViewController와 해당하는 화면이 연결되었나 확인하려고 StockModifyViewController에 print문을 작성해보니 콘솔창에 아무것도 나오지 않았습니다. 그리고 'Inherit Module From Target'부분이 체크가 되어있지 않다는 것을 깨달았습니다.
+
+<br/>
+
+![](https://i.imgur.com/tUoJjDW.png)
+
+<br/>
+
+그래서 현재는 위와 같이 체크를 해 놓은 상태이고 정상적으로 두 번째 뷰의 요소들을 사용할 수 있습니다.
+
+<br/>
+
+### 5. 모달로 바꾸었지만 요소들에 nil이 들어가 런타임 오류가 생기는 경우
+
+처음에는 다음과 같은 방식으로 모달을 구현했습니다.
+```swift
+let stockModifyViewController = StockModifyViewController()
+stockModifyViewController.modalPresentationStyle = stockModifyViewController.fullScreen
+self.present(stockModifyViewController, animated: true, completion: nil)
+```
+그런데, 두 번째 뷰컨트롤러의 Label들에 nil이 들어가 암시적 추출한 라벨들이 먹히지 않는 일이 생겼습니다.
+고민을 해보니 스토리 보드를 불러오는 것이 아닌 뷰 컨트롤러를 불러와서 이런 문제가 생긴 것 같습니다.
+```swift
+guard let stockModifyViewController = self.storyboard?.instantiateViewController(withIdentifier: "stockModifyViewController") else {
+            return
+        }
+````
+그래서 이렇게 스토리보드를 사용한 코드를 넣어주었습니다.
+덧붙여서 원래 있던 네비게이션 컨트롤러를 사용하기 위해서 다음과 같이 코드를 수정했습니다.
+
+```swift
+func presentModal() {
+        guard let stockModifyViewController = self.storyboard?.instantiateViewController(withIdentifier: "stockModifyViewController") else {
+            return
+        }
+        let navigationController = UINavigationController(rootViewController: stockModifyViewController)
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+        present(navigationController, animated: true, completion: nil)
+    }
+```
+
+<br/>
+
+### 6. Stepper 사이즈 조정이 안되는 경우 
+
+```swift
+stepper.transform = stepper.transform.scaledBy(x: 1.25, y: 0.9)
+```
+
+재고 관리 뷰에서 객체들을 stack view에 넣고 크기를 조정하던 중 UIStepper의 사이즈 변경이 안되는 문제를 발견했습니다. 다양한 문서를 찾아보니 UIStepper의 사이즈 수정은 스토리보드가 아닌 viewController에서 코드로 작성해 줘야 함을 알게 되었습니다.
+
 
 <br/>
 
@@ -214,9 +239,18 @@ for fruit in remainder {
 > - [Swift 공식문서 - Error Handling](https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html)
 > - [Swift 공식문서 - Enumeration](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html)
 > - [Swift 공식문서 - Structures and Classes](https://docs.swift.org/swift-book/LanguageGuide/ClassesAndStructures.html)
+> - [Swift 공식문서 - UIViewController](https://developer.apple.com/documentation/uikit/uiviewcontroller)
+> - [Swift 공식문서 - UIStepper](https://developer.apple.com/documentation/uikit/uistepper)
 > - [[Swift] Collection Type - 딕셔너리(Dictionary), 반복문, key/value 기반 정렬](https://jellysong.tistory.com/91)
 
 <br/>
 
 ## 8. 아쉬운 점
+### STEP 1
 * nil을 통해 무언가가 되지 않는 경우에 대한 정보를 전달하고 있다는 점이 아쉬웠습니다: 근본적으로 nil반환이 나쁜 것은 아니지만, 사용자가 경고해야할 일이 있는 경우 error를 반환하는게 좋다고 합니다. 그래서 추후에 step02, 03을 진행하면서 리팩토링 할 생각입니다.
+
+### STEP 2
+* 해당 step에서 은닉화를 적용하지 못 한 부분이 아쉬웠습니다: 적절하게 은닉화를 사용하는 방법에 대해 고민하여 step3를 진행하며 리팩토링 했습니다. 
+
+### STEP 3
+* 추후 마지막 머지 이후 추가할 예정
