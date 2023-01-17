@@ -1,5 +1,5 @@
 //
-//  JuiceMaker - ViewController.swift
+//  JuiceMaker - SelectJuiceViewController.swift
 //  Created by Rhode, christy
 //  Copyright © yagom academy. All rights reserved.
 // 
