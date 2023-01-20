@@ -249,7 +249,10 @@ stepper.transform = stepper.transform.scaledBy(x: 1.25, y: 0.9)
 * delegate 적용
 
 <br/>
+
 ---
+
+
 ## 9. 팀 회고
 ### 우리팀이 잘한 점
 - 서로 의견을 존중하며 상대방을 배려함
