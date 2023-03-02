@@ -30,8 +30,17 @@ final class StockModifyViewController: UIViewController {
         setLabelStock()
         setStepperStock()
         setStepperSize()
+        configureDynamicType()
     }
-   
+    
+    private func configureDynamicType() {
+        strawberryStockUILabel.adjustsFontForContentSizeCategory = true
+        bananaStockUILabel.adjustsFontForContentSizeCategory = true
+        pineappleStockUILabel.adjustsFontForContentSizeCategory = true
+        kiwiStockUILabel.adjustsFontForContentSizeCategory = true
+        mangoStockUILabel.adjustsFontForContentSizeCategory = true
+    }
+    
     private func setLabelStock() {
         if let strawberry = delegate?.fetchStock(fruit: .딸기) {
             strawberryStockUILabel.text = String(strawberry)

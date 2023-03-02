@@ -41,11 +41,28 @@ final class SelectJuiceViewController: UIViewController, FruitStockDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         displayStocks()
+        configureDynamicType()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         displayStocks()
+    }
+    
+    private func configureDynamicType() {
+        strawberryStockUILabel.adjustsFontForContentSizeCategory = true
+        bananaStockUILabel.adjustsFontForContentSizeCategory = true
+        pineappleStockUILabel.adjustsFontForContentSizeCategory = true
+        kiwiStockUILabel.adjustsFontForContentSizeCategory = true
+        mangoStockUILabel.adjustsFontForContentSizeCategory = true
+        
+        strawberryBananaButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        strawberryButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        bananaButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        pineappleButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        mangoKiwiButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        kiwiButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        mangoButton.titleLabel?.adjustsFontForContentSizeCategory = true
     }
     
     @IBAction func touchJuiceButton(_ sender: UIButton) {
