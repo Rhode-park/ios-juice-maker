@@ -63,10 +63,17 @@ final class SelectJuiceViewController: UIViewController, FruitStockDelegate {
         mangoKiwiButton.titleLabel?.adjustsFontForContentSizeCategory = true
         kiwiButton.titleLabel?.adjustsFontForContentSizeCategory = true
         mangoButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        
+        strawberryStockUILabel.accessibilityLabel = "재고" + (strawberryStockUILabel.text ?? "0") + "개"
+        bananaStockUILabel.accessibilityLabel = "재고" + (bananaStockUILabel.text ?? "0") + "개"
+        pineappleStockUILabel.accessibilityLabel = "재고" + (pineappleStockUILabel.text ?? "0") + "개"
+        kiwiStockUILabel.accessibilityLabel = "재고" + (kiwiStockUILabel.text ?? "0") + "개"
+        mangoStockUILabel.accessibilityLabel = "재고" + (mangoStockUILabel.text ?? "0") + "개"
     }
     
     @IBAction func touchJuiceButton(_ sender: UIButton) {
         selectJuiceButton(titleName: sender.titleLabel?.text)
+        configureDynamicType()
     }
     
     func displayStocks() {

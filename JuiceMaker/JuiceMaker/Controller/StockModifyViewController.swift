@@ -39,6 +39,12 @@ final class StockModifyViewController: UIViewController {
         pineappleStockUILabel.adjustsFontForContentSizeCategory = true
         kiwiStockUILabel.adjustsFontForContentSizeCategory = true
         mangoStockUILabel.adjustsFontForContentSizeCategory = true
+        
+        strawberryStockUILabel.accessibilityLabel = "재고" + (strawberryStockUILabel.text ?? "0") + "개"
+        bananaStockUILabel.accessibilityLabel = "재고" + (bananaStockUILabel.text ?? "0") + "개"
+        pineappleStockUILabel.accessibilityLabel = "재고" + (pineappleStockUILabel.text ?? "0") + "개"
+        kiwiStockUILabel.accessibilityLabel = "재고" + (kiwiStockUILabel.text ?? "0") + "개"
+        mangoStockUILabel.accessibilityLabel = "재고" + (mangoStockUILabel.text ?? "0") + "개"
     }
     
     private func setLabelStock() {
@@ -87,6 +93,7 @@ final class StockModifyViewController: UIViewController {
     
     @IBAction private func touchFruitStockStepper(_ sender: UIStepper) {
         modifyStockTapped(tag: sender.tag)
+        configureDynamicType()
     }
     
     @IBAction func touchCloseButton(_ sender: UIBarButtonItem) {
